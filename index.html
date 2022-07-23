@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Первая лабораторная</title>
+    <meta charset="UTF-8">
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="page">
+    <div id="header"><a href="https://github.com/SudYar/Web1" target="_blank">Ссылка на git</a>
+        <button class="theme-button" type="button">Изменить тему</button>
+        <span>Сударушкин Ярослав P3214<br/>
+        Вариант 14209</span><br/></div>
+    <div class="clear"></div>
+    <div id="content">
+        <div id="left">
+            <input type="button" id="clear-table" value="Очистить таблицу">
+            <table id="answer-table">
+                <tr>
+                    <td>X</td><td>Y</td> <td>R</td><td>Результат</td><td>Время выполнения (мс)</td><td>Текущее время</td>
+                </tr>
+            </table>
+        </div>
+        <div id="right">
+            <img class="img-center" src="area.png" alt="Зона попадания">
+            Зона, в которую надо попасть
+            <div id="request">
+                <form id="request-coordinates">
+                        <p id="xLabel">Выберите X (X=0)</p>
+                        <p><input type="button" id="x-3" value="-3" onclick="set_X_value(id)">
+                            <input type="button" id="x-2" value="-2" onclick="set_X_value(id)">
+                            <input type="button" id="x-1" value="-1" onclick="set_X_value(id)">
+                            <input type="button" id="x0" name="x" value="0" onclick="set_X_value(id)">
+                            <input type="button" id="x1" name="x" value="1" onclick="set_X_value(id)">
+                            <input type="button" id="x2" name="x" value="2" onclick="set_X_value(id)">
+                            <input type="button" id="x3" name="x" value="3" onclick="set_X_value(id)">
+                            <input type="button" id="x4" name="x" value="4" onclick="set_X_value(id)">
+                        </p>
+                        <p>Введите Y:   <input type="text" id="y-text" name="y" required placeholder="(-5; 5)" size="2px" min="-5" max="5" maxlength="10"></p>
+                        <p>Введите R:   <input type="text" id="r-text" name="r" required placeholder="(2; 5)" size="2px" min="2" max="5" maxlength="10"></p>
+                        <p><input type="submit" name="submit" > <input id="reset_button" type="reset" name="reset"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>
