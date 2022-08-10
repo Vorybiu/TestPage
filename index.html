@@ -1,50 +1,193 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <title>Первая лабораторная</title>
-    <meta charset="UTF-8">
-    <link href="style.css" rel="stylesheet" type="text/css"/>
+<html>
 
+<head>
+    <title>SnakeGame</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            color: white;
+        }
+        
+        body {
+            background: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        canvas {
+            border: 1px solid white
+        }
+    </style>
 </head>
-<body class="page">
-    <div id="header"><a href="https://github.com/SudYar/Web1" target="_blank">Ссылка на git</a>
-        <button class="theme-button" type="button">Изменить тему</button>
-        <span>Сударушкин Ярослав P3214<br/>
-        Вариант 14209</span><br/></div>
-    <div class="clear"></div>
-    <div id="content">
-        <div id="left">
-            <input type="button" id="clear-table" value="Очистить таблицу">
-            <table id="answer-table">
-                <tr>
-                    <td>X</td><td>Y</td> <td>R</td><td>Результат</td><td>Время выполнения (мс)</td><td>Текущее время</td>
-                </tr>
-            </table>
-        </div>
-        <div id="right">
-            <img class="img-center" src="area.png" alt="Зона попадания">
-            Зона, в которую надо попасть
-            <div id="request">
-                <form id="request-coordinates">
-                        <p id="xLabel">Выберите X (X=0)</p>
-                        <p><input type="button" id="x-3" value="-3" onclick="set_X_value(id)">
-                            <input type="button" id="x-2" value="-2" onclick="set_X_value(id)">
-                            <input type="button" id="x-1" value="-1" onclick="set_X_value(id)">
-                            <input type="button" id="x0" name="x" value="0" onclick="set_X_value(id)">
-                            <input type="button" id="x1" name="x" value="1" onclick="set_X_value(id)">
-                            <input type="button" id="x2" name="x" value="2" onclick="set_X_value(id)">
-                            <input type="button" id="x3" name="x" value="3" onclick="set_X_value(id)">
-                            <input type="button" id="x4" name="x" value="4" onclick="set_X_value(id)">
-                        </p>
-                        <p>Введите Y:   <input type="text" id="y-text" name="y" required placeholder="(-5; 5)" size="2px" min="-5" max="5" maxlength="10"></p>
-                        <p>Введите R:   <input type="text" id="r-text" name="r" required placeholder="(2; 5)" size="2px" min="2" max="5" maxlength="10"></p>
-                        <p><input type="submit" name="submit" > <input id="reset_button" type="reset" name="reset"></p>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="clear"></div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="js/script.js"></script>
+
+<body>
+    <canvas id="game" width="400" height="400"></canvas>
+    <script>
+        var canvas = document.getElementById('game');
+        
+        var context = canvas.getContext('2d');
+        // скорость змейк
+        var grid = 16;
+        // задержка в скорости
+        var spead = 4;
+        var count = 0;
+        var startX = 160;
+        var startY = 160;
+        
+        
+        var snake = {
+            // начальные координаты
+            x: startX,
+            y: startY,
+            
+            dx: grid,
+            dy: 0,
+            
+            cells: [],
+            // start length
+            maxCells: 4,
+            
+            color: 'green'
+        };
+        
+        
+        var area = {
+            
+            min: 0,
+            max: 25,
+            length: grid,
+            left: 0,
+            right: canvas.width,
+            up: 0,
+            down: canvas.height
+        };
+        
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random()*(max-min) + min);
+        }
+        
+        var apple = {
+            
+            x: getRandomInt(area.min, area.max) * area.length,
+            y: getRandomInt(area.min, area.max) * area.length,
+            
+            color: 'red'
+        };
+        
+        function loop() {
+            requestAnimationFrame(loop);
+            if (++count < spead) {
+                return;
+            }
+            
+            count = 0;
+        
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            // move
+            snake.x += snake.dx;
+            snake.y += snake.dy;
+            
+            if (snake.x >= area.right) {
+                snake.x = area.left;
+            } else if (snake.x < area.left) {
+                snake.x = area.right;
+            }
+            if (snake.y >= area.down) {
+                snake.y = area.up;
+            } else if (snake.y < area.up) {
+                snake.y = area.down;
+            }
+            
+            // Движение частей змейки
+            
+            snake.cells.unshift({ x: snake.x, y: snake.y});
+            
+            if (snake.cells.length > snake.maxCells) {
+                snake.cells.pop();
+            }
+            
+            
+            // art food
+            
+            context.fillStyle = apple.color;
+            context.fillRect(apple.x, apple.y, grid - 1, grid - 1);
+            
+            // art snake
+            context.fillStyle = snake.color;
+            snake.cells.forEach(function (cell, index){
+                context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+                // if eat food
+                if (cell.x === apple.x && cell.y === apple.y) {
+                    snake.maxCells++;
+                    apple.x = getRandomInt(area.min, area.max) * area.length;
+                    apple.y = getRandomInt(area.min, area.max) * area.length;
+                }
+                
+                // Если столкнулась сама с собой
+                for (var i = index + 1; i < snake.cells.length; i++) {
+                    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+                        snake.x = 160;
+                        snake.y = 160;
+                        snake.cells = [];
+                        snake.maxCells = 4;
+                        snake.dx = grid;
+                        snake.dy = 0;
+                        
+                        apple.x = getRandomInt(area.min, area.max) * area.length;
+                        apple.y = getRandomInt(area.min, area.max) * area.length;
+                        
+                    }
+                }
+            });
+            
+    
+        }
+        
+        document.addEventListener('keydown', function(e) {
+        // left
+            if (e.which === 37 && snake.dx === 0) {
+                if (snake.cells.length > 1 && ((snake.cells[1].x + grid) === snake.x && snake.cells[1].y === snake.y)){
+                    return;
+                } else {
+                    snake.dx = -grid;
+                    snake.dy = 0;
+                }
+            }
+        // up
+            if (e.which === 38 && snake.dy === 0) {
+                if (snake.cells.length > 1 && (snake.cells[1].x === snake.x && (snake.cells[1].y + grid) === snake.y)){
+                    return;
+                } else {
+                    snake.dx = 0;
+                    snake.dy = -grid;
+                }
+            }
+        // right
+            if (e.which === 39 && snake.dx === 0) {
+                if (snake.cells.length > 1 && ((snake.cells[1].x - grid) === snake.x && snake.cells[1].y === snake.y)){
+                    return;
+                } else {
+                    snake.dx = grid;
+                    snake.dy = 0;
+                }
+            }
+        // down 
+            if (e.which === 40 && snake.dy === 0) {
+                if (snake.cells.length > 1 && (snake.cells[1].x === snake.x && (snake.cells[1].y - grid) === snake.y)){
+                    return;
+                } else {
+                    snake.dx = 0;
+                    snake.dy = grid;
+                }
+            }
+        });
+        
+        requestAnimationFrame(loop);
+        
+        //document.write(snake.cells[1].x+ " ");    
+    </script>
 </body>
 </html>
